@@ -1,5 +1,5 @@
 <?php
-
+**USER TESTING**
 //$testPassword = 'TestPassword123!';
 //$passwordHash = password_hash (
 //    $testPassword,
