@@ -1,10 +1,15 @@
 <?php
 session_start();
 
-// Allow only logged-in students.
+// Allow only fully authenticated students.
 if (
-    !isset($_SESSION['user_id']) ||
-    ($_SESSION['role'] ?? '') !== 'student'
+    !isset(
+        $_SESSION['user_id'],
+        $_SESSION['role'],
+        $_SESSION['auth_complete']
+    ) ||
+    $_SESSION['role'] !== 'student' ||
+    $_SESSION['auth_complete'] !== true
 ) {
     header('Location: login.php');
     exit;
