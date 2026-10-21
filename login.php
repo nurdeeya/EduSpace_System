@@ -1,7 +1,16 @@
+
 <?php
 session_start();
 
-if (isset($_SESSION['user_id'], $_SESSION['role'])) {
+// Redirect only fully authenticated users.
+if (
+    isset(
+        $_SESSION['user_id'],
+        $_SESSION['role'],
+        $_SESSION['auth_complete']
+    ) &&
+    $_SESSION['auth_complete'] === true
+) {
     if ($_SESSION['role'] === 'student') {
         header('Location: student_dashboard.php');
         exit;
@@ -13,12 +22,14 @@ if (isset($_SESSION['user_id'], $_SESSION['role'])) {
     }
 }
 
+// Display login messages.
 $error = $_SESSION['login_error'] ?? '';
 $showLockoutPopup = $_SESSION['show_lockout_popup'] ?? false;
 
 unset($_SESSION['login_error']);
 unset($_SESSION['show_lockout_popup']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
