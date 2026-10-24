@@ -93,9 +93,7 @@ $fullName = $_SESSION['full_name'] ?? 'Lecturer';
                     Organise and manage the courses assigned
                     to you.
                 </p>
-                <span class="feature-status">
-                    Planned Feature
-                </span>
+                <a href="lecturer_create_assignment.php" style="display: inline-block; padding: 10px 16px; background-color: #243b64; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 10px;">Manage Assignments</a>
             </div>
 
             <div class="card">
