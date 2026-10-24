@@ -169,10 +169,14 @@ try {
     // Regenerate the session ID after authentication.
     session_regenerate_id(true);
 
-    $_SESSION['user_id'] = $user['user_id'];
-    $_SESSION['login_identifier'] = $user['login_identifier'];
-    $_SESSION['full_name'] = $user['full_name'];
-    $_SESSION['role'] = $user['role'];
+    // Password is correct, but login is NOT complete until MFA passes.
+    $_SESSION['pending_mfa_user_id'] = $user['user_id'];
+    $_SESSION['pending_mfa_role']    = $user['role'];
+    $_SESSION['auth_complete']       = false;
+
+    // verify_mfa.php sends users without MFA on to setup_mfa.php itself.
+    header('Location: ../verify_mfa.php');
+    exit;
 
     // Redirect according to the user's role.
     if ($user['role'] === 'student') {
