@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 24, 2026 at 05:52 AM
+-- Generation Time: Oct 24, 2026 at 08:52 PM
 -- Server version: 8.4.7
 -- PHP Version: 8.3.28
 
@@ -24,6 +24,57 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `assignments`
+--
+
+DROP TABLE IF EXISTS `assignments`;
+CREATE TABLE IF NOT EXISTS `assignments` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `description` text,
+  `file_path` varchar(255) DEFAULT NULL,
+  `deadline` datetime NOT NULL,
+  `created_by` int UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `assignments`
+--
+
+INSERT INTO `assignments` (`id`, `title`, `description`, `file_path`, `deadline`, `created_by`, `created_at`) VALUES
+(1, 'Test', 'sad', 'c205e7432543e599be2b3e1703566295.pdf', '2026-10-27 00:43:00', 6, '2026-10-24 16:44:02'),
+(2, 'Assignment 1: Late Upload Test', 'Testing Late Upload', NULL, '2026-10-25 04:48:00', 6, '2026-10-24 20:48:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_logs`
+--
+
+DROP TABLE IF EXISTS `audit_logs`;
+CREATE TABLE IF NOT EXISTS `audit_logs` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `action` varchar(100) NOT NULL,
+  `details` text,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`id`, `user_id`, `action`, `details`, `ip_address`, `created_at`) VALUES
+(1, 2, 'SUBMISSION_CREATED', 'assignment_id=1; file=bca08ad460ecfb710786062377cf46ba.pdf; status=Submitted', '::1', '2026-10-24 20:46:32'),
+(2, 2, 'SUBMISSION_CREATED', 'assignment_id=2; file=1f9574015903ed45bad5696e2f9d8df8.pdf; status=Late', '::1', '2026-10-24 20:49:22');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `login_attempts`
 --
 
@@ -38,6 +89,34 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
   KEY `idx_ip_time` (`ip_address`,`attempted_at`),
   KEY `idx_email_time` (`email_submitted`,`attempted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `submissions`
+--
+
+DROP TABLE IF EXISTS `submissions`;
+CREATE TABLE IF NOT EXISTS `submissions` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `assignment_id` int UNSIGNED NOT NULL,
+  `student_id` int UNSIGNED NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `submitted_at` datetime NOT NULL,
+  `status` enum('Submitted','Late') NOT NULL,
+  `remarks` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_assignment_student` (`assignment_id`,`student_id`),
+  KEY `idx_student` (`student_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `submissions`
+--
+
+INSERT INTO `submissions` (`id`, `assignment_id`, `student_id`, `file_path`, `submitted_at`, `status`, `remarks`) VALUES
+(1, 1, 2, 'bca08ad460ecfb710786062377cf46ba.pdf', '2026-10-25 04:46:32', 'Submitted', 'Test'),
+(2, 2, 2, '1f9574015903ed45bad5696e2f9d8df8.pdf', '2026-10-25 04:49:22', 'Late', NULL);
 
 -- --------------------------------------------------------
 
@@ -75,33 +154,19 @@ INSERT INTO `users` (`user_id`, `login_identifier`, `full_name`, `email`, `passw
 (4, 'KamalAbdul', 'Kamal Abdullah', 'Kamal@gmail.com', '$2y$10$7McwUQyhdJ3Dw227U.6QBe/.H.KR2BrUkY2bRSZQKy0umitS6b1Su', 'lecturer', 0, NULL, 0, NULL, 1, '2026-10-21 15:20:18'),
 (5, 'BSW12345678', 'Aqilah Balqis', 'Aqilah@gmail.com', '$2y$10$VhmJUJ0PbcyK/Ki4utgo4uIadRiq6fVr4lCYplSQ5gRhMBxx41XZm', 'student', 5, '2026-10-21 23:58:50', 0, NULL, 1, '2026-10-21 15:41:22'),
 (6, 'HashimBakar', 'Hashim Bakar', 'Hashim@gmail.com', '$2y$10$iKU6bbv.MOo7RBY/wVoV8eCVAitiu2XLMlRUh4FbeAm6Mwi89BXJG', 'lecturer', 0, NULL, 0, NULL, 1, '2026-10-21 15:55:32');
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `submissions`
+--
+ALTER TABLE `submissions`
+  ADD CONSTRAINT `fk_submissions_assignment` FOREIGN KEY (`assignment_id`) REFERENCES `assignments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_submissions_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
--- Table structure for table `assignments`
-
-CREATE TABLE `assignments` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) NOT NULL,
-  `description` text,
-  `file_path` varchar(255) DEFAULT NULL,
-  `deadline` datetime NOT NULL,
-  `created_by` int UNSIGNED NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Table structure for table `audit_logs`
-
-CREATE TABLE `audit_logs` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` int UNSIGNED NOT NULL,
-  `action` varchar(100) NOT NULL,
-  `details` text,
-  `ip_address` varchar(45) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
